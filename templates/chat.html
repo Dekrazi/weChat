@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>WeChat Room - {{ room }}</h2>
+        <div id="message-container">
+            <ul id="message-list"></ul>
+        </div>
+        <form id="message-form">
+            <input id="message-input" autocomplete="off" placeholder="Type your message..." />
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.1/socket.io.js"></script>
+    <script>
+        $(document).ready(function () {
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+            socket.on('message', function (data) {
+                var messageList = $('#message-list');
+                messageList.append('<li>' + data.message + '</li>');
+                messageList.scrollTop(messageList[0].scrollHeight);
+            });
+
+            socket.on('connect', function () {
+                console.log('Connected to the server');
+            });
+
+            $('#message-form').submit(function (event) {
+                event.preventDefault();
+                var messageInput = $('#message-input');
+                var message = messageInput.val();
+                if (message.trim() !== '') {
+                    // Emit 'message' event to the server
+                    socket.emit('message', { message: message, username: '{{ username }}', room: '{{ room }}' });
+                    messageInput.val('');
+                }
+            });
+
+            socket.emit('join', { username: '{{ username }}', room: '{{ room }}' });
+        });
+    </script>
+
+
+{% endblock %}

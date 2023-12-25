@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form action="/chat" method="post">
+    <label for="username">Enter your username:</label>
+    <input type="text" id="username" name="username" required>
+    <label for="room">Enter room name:</label>
+    <input type="text" id="room" name="room" required>
+    <button type="submit">Join Room</button>
+</form>
+{% endblock %}
